@@ -51,4 +51,5 @@ print(ds_test)
 #Predicting dataset
 y_pred = model.predict(ds_test)
 label = decode_predictions(y_pred, top = 5)
-print(label)
+
+print(type(label))
