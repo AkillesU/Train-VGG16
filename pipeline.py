@@ -24,11 +24,12 @@ train_ds = tf.keras.utils.image_dataset_from_directory(
     image_size=(224,224),
     shuffle=True,#Shuffles data to create "random" dataset from directory
     seed=123,
-    subset="training"
+    subset="training",
+    validation_split= 0.2
 )
 #Creating validation dataset from fast-22 imagenet directory, defining batch size and prerpocessing image size
 validation_ds = tf.keras.utils.image_dataset_from_directory(
-    "/fast-data22/datasets/ILSVRC/2012/clsloc/val_white",
+    "/fast-data22/datasets/ILSVRC/2012/clsloc/train",
     labels='inferred',
     label_mode="int",
     color_mode="rgb",
@@ -36,7 +37,8 @@ validation_ds = tf.keras.utils.image_dataset_from_directory(
     image_size=(224, 224),
     shuffle=True, #Shuffles data to create "random" dataset from directory
     seed=123,
-    subset="validation"
+    subset="validation",
+    validation_split= 0.2
 )
 #Checking the image and label object shapes
 for images, labels in train_ds.take(1):
