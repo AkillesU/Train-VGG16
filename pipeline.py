@@ -5,7 +5,6 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 import keras.losses
 import tensorflow as tf
 
-import tensorflow-datasets as tfds
 import wandb
 from wandb.keras import WandbCallback
 
