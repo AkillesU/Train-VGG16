@@ -6,28 +6,26 @@ import tensorflow_datasets as tfds
 print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
 
 train_ds = tf.keras.utils.image_dataset_from_directory(
-    "C:/Users/arech/Documents/Imagenet/imagenet-a/",
+    "/fast-data22/datasets/ILSVRC/2012/clsloc/train",
     labels = 'inferred',
     label_mode= "int",
     color_mode="rgb",
-    batch_size=8,
+    batch_size=32,
     image_size=(224,224),
     shuffle=True,
     seed=123,
-    validation_split=0.2,
     subset="training"
 )
 
 validation_ds = tf.keras.utils.image_dataset_from_directory(
-    "C:/Users/arech/Documents/Imagenet/imagenet-a/",
+    "/fast-data22/datasets/ILSVRC/2012/clsloc/val_white",
     labels='inferred',
     label_mode="int",
     color_mode="rgb",
-    batch_size=8,
+    batch_size=32,
     image_size=(224, 224),
     shuffle=True,
     seed=123,
-    validation_split=0.2,
     subset="validation"
 )
 
@@ -42,7 +40,7 @@ model.compile(
     metrics=["accuracy"]
 )
 
-model.fit(train_ds, epochs=2, verbose=2)
+model.fit(train_ds, epochs=20, verbose=2)
 
 
 
