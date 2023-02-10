@@ -10,7 +10,7 @@ train_ds = tf.keras.utils.image_dataset_from_directory(
     labels = 'inferred',
     label_mode= "int",
     color_mode="rgb",
-    batch_size=32,
+    batch_size=8,
     image_size=(224,224),
     shuffle=True,
     seed=123,
@@ -23,7 +23,7 @@ validation_ds = tf.keras.utils.image_dataset_from_directory(
     labels='inferred',
     label_mode="int",
     color_mode="rgb",
-    batch_size=32,
+    batch_size=8,
     image_size=(224, 224),
     shuffle=True,
     seed=123,
@@ -31,6 +31,9 @@ validation_ds = tf.keras.utils.image_dataset_from_directory(
     subset="validation"
 )
 
+for images, labels in train_ds.take(1):
+    print(images.shape)
+    print(labels.shape)
 model = tf.keras.applications.VGG16()
 
 model.compile(
@@ -39,7 +42,7 @@ model.compile(
     metrics=["accuracy"]
 )
 
-model.fit(train_ds, epochs=20, verbose=2)
+model.fit(train_ds, epochs=2, verbose=2)
 
 
 
