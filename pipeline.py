@@ -18,7 +18,7 @@ wandb.init(project="Train-VGG16", entity="a-rechardt")
 
 epochs = 1
 batch_size = 32
-learning_rate = 0.007
+learning_rate = 0.001
 
 #Creating training dataset from fast-22 imagenet directory, defining batch size and prerpocessing image size
 train_ds = tf.keras.utils.image_dataset_from_directory(
