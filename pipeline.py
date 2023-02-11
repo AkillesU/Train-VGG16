@@ -69,6 +69,7 @@ model.compile(
 model.fit(train_ds, epochs= epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback()])
 
 model.save_weights('trained_weights_VGG16/')
+print("Done")
 
 
 
