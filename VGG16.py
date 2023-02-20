@@ -17,9 +17,10 @@ print(gpus)
 epochs = 10
 batch_size = 32
 learning_rate = 0.0001
+weight_decay = 0.0005
 
 #Initializing wandb
-wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate})
+wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate, "weight_decay":weight_decay})
 
 
 
@@ -59,7 +60,7 @@ model = tf.keras.applications.VGG16(weights='imagenet')
 
 #Setting model training hyperparameters
 model.compile(
-    optimizer=tf.keras.optimizers.Adam(learning_rate= learning_rate),
+    optimizer=tf.keras.optimizers.Adam(learning_rate= learning_rate, weight_decay= weight_decay),
     loss=keras.losses.SparseCategoricalCrossentropy(),
     metrics=["accuracy"]
 )

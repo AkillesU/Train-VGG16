@@ -14,22 +14,20 @@ gpus = tf.config.list_physical_devices('GPU')
 print(gpus)
 
 
+epochs = 10
+batch_size = 32
+learning_rate = 0.0001
+weight_decay = 0.0005
+
+
 #Creating model from keras library: pretrained vgg16 model
 model = tf.keras.applications.VGG16(weights='imagenet')
 
-test_ds = tf.keras.utils.image_dataset_from_directory(
-    "/fast-data22/datasets/ILSVRC/2012/clsloc/val_white",
-    labels='inferred',
-    label_mode="int",
-    color_mode="rgb",
-    batch_size=32,
-    image_size=(224, 224),
+#Setting model training hyperparameters
+model.compile(
+    optimizer=tf.keras.optimizers.Adam(learning_rate= learning_rate, weight_decay= weight_decay),
+    loss=keras.losses.SparseCategoricalCrossentropy(),
+    metrics=["accuracy"]
 )
-
-test_ds = tf.keras.applications.vgg16.preprocess_input(test_ds)
-
-
-result = model.evaluate(test_ds, verbose = 1)
-
-print("loss", result[0])
-print("accuracy",result[1])
+#Checking model architecture
+model.summary()
