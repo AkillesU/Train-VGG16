@@ -2,7 +2,7 @@ import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
-
+import numpy as np
 import keras.losses
 import tensorflow as tf
 
@@ -26,7 +26,7 @@ test_ds = tf.keras.utils.image_dataset_from_directory(
     image_size=(224, 224),
 )
 
-test_ds = tf.keras.applications.vgg16.preprocess_input(test_ds)
+test_ds = tf.keras.applications.vgg16.preprocess_input(np.asarray(test_ds))
 
 
 result = model.evaluate(test_ds, verbose = 1)
