@@ -69,6 +69,8 @@ model.fit(train_ds, epochs= epochs, verbose=1, validation_data=validation_ds, ca
 
 model.save_weights('trained_weights_VGG16/')
 
+wandb.finish()
+
 exit("Done")
 
 
