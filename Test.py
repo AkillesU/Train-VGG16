@@ -5,7 +5,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 import numpy as np
 import keras.losses
 import tensorflow as tf
-
+import tensorflow_datasets as tfds
 import wandb
 from wandb.keras import WandbCallback
 
@@ -26,7 +26,7 @@ test_ds = tf.keras.utils.image_dataset_from_directory(
     image_size=(224, 224),
 )
 
-test_ds = tf.keras.applications.vgg16.preprocess_input(np.asarray(test_ds))
+test_ds = tf.keras.applications.vgg16.preprocess_input(tfds.as_numpy(test_ds))
 
 
 result = model.evaluate(test_ds, verbose = 1)
