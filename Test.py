@@ -42,7 +42,7 @@ model = keras.Model(inputs, outputs)
 
 #Setting model training hyperparameters
 model.compile(
-    optimizer=tf.keras.optimizers.Adam(learning_rate= learning_rate, weight_decay= weight_decay),
+    optimizer=tf.keras.optimizers.Adam(learning_rate= learning_rate),
     loss=keras.losses.SparseCategoricalCrossentropy(),
     metrics=["accuracy"]
 )
