@@ -6,8 +6,6 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 import tensorflow as tf
 
-import wandb
-from wandb.keras import WandbCallback
 
 #Checking GPU compatibility
 gpus = tf.config.list_physical_devices('GPU')
