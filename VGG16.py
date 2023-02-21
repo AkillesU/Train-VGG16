@@ -20,7 +20,7 @@ learning_rate = 0.0001
 weight_decay = 0.0005
 momentum = 0.9
 #Initializing wandb
-wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate})
+#wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate})
 
 
 
