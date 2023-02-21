@@ -6,7 +6,7 @@ import numpy as np
 import keras.losses
 import tensorflow as tf
 import tensorflow_datasets as tfds
-import pandas as pd
+
 
 
 #Checking GPU compatibility
