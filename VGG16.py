@@ -14,13 +14,13 @@ gpus = tf.config.list_physical_devices('GPU')
 print(gpus)
 
 
-epochs = 10
-batch_size = 32
+epochs = 2
+batch_size = 64
 learning_rate = 0.0001
 weight_decay = 0.0005
-
+momentum = 0.9
 #Initializing wandb
-wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate, "weight_decay":weight_decay})
+wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate, "momentum":momentum})
 
 
 
@@ -33,22 +33,18 @@ train_ds = tf.keras.utils.image_dataset_from_directory(
     batch_size=batch_size,
     image_size=(224,224),
     shuffle=True,#Shuffles data to create "random" dataset from directory
-    seed=123,
-    subset="training",
-    validation_split= 0.2
+    seed=123
 )
 #Creating validation dataset from fast-22 imagenet directory, defining batch size and prerpocessing image size
 validation_ds = tf.keras.utils.image_dataset_from_directory(
-    "/fast-data22/datasets/ILSVRC/2012/clsloc/train",
+    "/fast-data22/datasets/ILSVRC/2012/clsloc/val_white",
     labels='inferred',
     label_mode="int",
     color_mode="rgb",
     batch_size=batch_size,
     image_size=(224, 224),
     shuffle=True, #Shuffles data to create "random" dataset from directory
-    seed=123,
-    subset="validation",
-    validation_split= 0.2
+    seed=123
 )
 #Checking the image and label object shapes
 for images, labels in train_ds.take(1):
@@ -56,16 +52,20 @@ for images, labels in train_ds.take(1):
     print(labels.shape)
 
 #Creating model from keras library: pretrained vgg16 model
-model = tf.keras.applications.VGG16(weights='imagenet')
+inputs = keras.Input(shape=[224,224,3], batch_size= batch_size)
+x = tf.keras.applications.vgg16.preprocess_input(inputs)
+model = tf.keras.applications.VGG16(weights="imagenet")
+outputs = model(x)
+model = keras.Model(inputs, outputs)
 
 #Setting model training hyperparameters
 model.compile(
-    optimizer=tf.keras.optimizers.Adam(learning_rate= learning_rate, weight_decay= weight_decay),
+    optimizer=tf.keras.optimizers.Adam(learning_rate= learning_rate, weight_decay= weight_decay, use_ema=True, ema_momentum= momentum),
     loss=keras.losses.SparseCategoricalCrossentropy(),
     metrics=["accuracy"]
 )
 #Training model and sending stats to wandb
-model.fit(train_ds, epochs= epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback()])
+model.fit(train_ds, epochs= epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback(), tf.keras.callbacks.EarlyStopping(monitor="val_accuracy", mode= "max", patience=1, verbose = 1)])
 
 model.save_weights('trained_weights_VGG16/')
 
