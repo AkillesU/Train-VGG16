@@ -20,7 +20,7 @@ learning_rate = 0.0001
 weight_decay = 0.0005
 momentum = 0.9
 #Initializing wandb
-wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate, "momentum":momentum})
+wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate})
 
 
 
@@ -60,7 +60,7 @@ model = keras.Model(inputs, outputs)
 
 #Setting model training hyperparameters
 model.compile(
-    optimizer=tf.keras.optimizers.Adam(learning_rate= learning_rate, use_ema=True, ema_momentum= momentum),
+    optimizer=tf.keras.optimizers.Adam(learning_rate= learning_rate),
     loss=keras.losses.SparseCategoricalCrossentropy(),
     metrics=["accuracy"]
 )
