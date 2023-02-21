@@ -6,30 +6,51 @@ import numpy as np
 import keras.losses
 import tensorflow as tf
 import tensorflow_datasets as tfds
-import wandb
-from wandb.keras import WandbCallback
+import pandas as pd
+
 
 #Checking GPU compatibility
 gpus = tf.config.list_physical_devices('GPU')
 print(gpus)
 
+epochs = 10
+batch_size = 32
+learning_rate = 0.0001
+weight_decay = 0.0005
 
-#Creating model from keras library: pretrained vgg16 model
-model = tf.keras.applications.VGG16(weights='imagenet')
 
-test_ds = tf.keras.utils.image_dataset_from_directory(
-    "/fast-data22/datasets/ILSVRC/2012/clsloc/val_white",
-    labels='inferred',
-    label_mode="int",
+#assign directory
+directory="/fast-data22/datasets/ILSVRC/2012/clsloc/val_white"
+
+dataset = tf.keras.utils.image_dataset_from_directory(
+    directory,
+    labels = 'inferred',
+    label_mode= "int",
     color_mode="rgb",
-    batch_size=32,
-    image_size=(224, 224),
+    batch_size=batch_size,
+    image_size=(224,224),
+    shuffle=True,#Shuffles data to create "random" dataset from directory
+    seed=123
 )
 
-test_ds = tf.keras.applications.vgg16.preprocess_input(tfds.as_numpy(test_ds))
 
+inputs = keras.Input(shape=[224,224,3], batch_size= batch_size)
+x = tf.keras.applications.vgg16.preprocess_input(inputs)
+model = tf.keras.applications.VGG16(weights="imagenet")
+outputs = model(x)
+model = keras.Model(inputs, outputs)
 
-result = model.evaluate(test_ds, verbose = 1)
+#Setting model training hyperparameters
+model.compile(
+    optimizer=tf.keras.optimizers.Adam(learning_rate= learning_rate, weight_decay= weight_decay),
+    loss=keras.losses.SparseCategoricalCrossentropy(),
+    metrics=["accuracy"]
+)
 
-print("loss", result[0])
-print("accuracy",result[1])
+model.summary()
+
+results = model.evaluate(dataset, batch_size=32)
+
+print(results)
+
+exit("Done")
