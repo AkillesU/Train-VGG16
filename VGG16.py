@@ -3,9 +3,9 @@ os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 
-import keras.losses
-import tensorflow as tf
 
+import tensorflow as tf
+import keras.losses
 import wandb
 from wandb.keras import WandbCallback
 
