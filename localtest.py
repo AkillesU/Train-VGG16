@@ -76,7 +76,7 @@ model.compile(
 )
 
 model.summary()
-keras.utils.plot_model(model, show_shapes=True)
+#keras.utils.plot_model(model, show_shapes=True)
 model.fit(training, epochs=epochs, validation_data=validation, verbose=1, callbacks=[WandbCallback()])
 
 results = model.evaluate(testing, batch_size=batch_size, callbacks=WandbCallback())
