@@ -2,24 +2,30 @@ import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
+
 import keras.losses
 import tensorflow as tf
-
 import wandb
 from wandb.keras import WandbCallback
 
+
+#Checking GPU compatibility
 gpus = tf.config.list_physical_devices('GPU')
 print(gpus)
-#wandb.init(project="Train-VGG16", entity="a-rechardt")
 
-epochs = 20
+epochs = 2
 batch_size = 32
 learning_rate = 0.001
+weight_decay = 0.0005
 
+#Initializing wandb
+wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate})
 
-#Creating training dataset from fast-22 imagenet directory, defining batch size and prerpocessing image size
-train_ds = tf.keras.utils.image_dataset_from_directory(
-    "C:/Users/arech/Documents/Imagenet/imagenet-a",
+#assign directory
+directory="/fast-data22/datasets/ILSVRC/2012/clsloc/train"
+
+training = tf.keras.utils.image_dataset_from_directory(
+    directory,
     labels = 'inferred',
     label_mode= "int",
     color_mode="rgb",
@@ -30,39 +36,51 @@ train_ds = tf.keras.utils.image_dataset_from_directory(
     subset="training",
     validation_split= 0.2
 )
-#Creating validation dataset from fast-22 imagenet directory, defining batch size and prerpocessing image size
-validation_ds = tf.keras.utils.image_dataset_from_directory(
-    "C:/Users/arech/Documents/Imagenet/imagenet-a",
-    labels='inferred',
-    label_mode="int",
+validation = tf.keras.utils.image_dataset_from_directory(
+    directory,
+    labels = 'inferred',
+    label_mode= "int",
     color_mode="rgb",
     batch_size=batch_size,
-    image_size=(224, 224),
-    shuffle=True, #Shuffles data to create "random" dataset from directory
+    image_size=(224,224),
+    shuffle=True,#Shuffles data to create "random" dataset from directory
     seed=123,
     subset="validation",
     validation_split= 0.2
 )
-#Checking the image and label object shapes
-for images, labels in train_ds.take(1):
-    print(images.shape)
-    print(labels.shape)
-#Setting hyperparameters to wandb
-wandb.config = {
-  "learning_rate": learning_rate,
-  "epochs": epochs,
-  "batch_size": batch_size
-}
-#Creating model from keras library: pretrained vgg16 model
-model = tf.keras.applications.VGG16()
+#assign directory
+testdir="/fast-data22/datasets/ILSVRC/2012/clsloc/val_white"
+
+testing = tf.keras.utils.image_dataset_from_directory(
+    testdir,
+    labels = 'inferred',
+    label_mode= "int",
+    color_mode="rgb",
+    batch_size=batch_size,
+    image_size=(224,224),
+    shuffle=True,#Shuffles data to create "random" dataset from directory
+    seed=123
+)
+
+inputs = keras.Input(shape=[224,224,3], batch_size= batch_size)
+x = tf.keras.applications.vgg16.preprocess_input(inputs)
+model = tf.keras.applications.VGG16(weights="imagenet")
+outputs = model(x)
+model = keras.Model(inputs, outputs)
 
 #Setting model training hyperparameters
 model.compile(
     optimizer=tf.keras.optimizers.Adam(learning_rate= learning_rate),
-    loss=keras.losses.SparseCategoricalCrossentropy(from_logits=False),
+    loss=keras.losses.SparseCategoricalCrossentropy(),
     metrics=["accuracy"]
 )
-#Training model and sending stats to wandb
-model.fit(train_ds, epochs= epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback()])
 
-model.save_weights('trained_weights_VGG16/')
+model.summary()
+keras.utils.plot_model(model, show_shapes=True)
+model.fit(training, epochs=epochs, validation_data=validation, verbose=1, callbacks=[WandbCallback()])
+
+results = model.evaluate(testing, batch_size=batch_size, callbacks=WandbCallback())
+
+print(results)
+wandb.finish()
+exit("Done")
