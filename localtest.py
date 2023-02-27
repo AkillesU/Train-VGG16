@@ -69,7 +69,7 @@ model = tf.keras.applications.VGG16(weights="imagenet")
 
 #Setting model training hyperparameters
 model.compile(
-    optimizer=tf.keras.optimizers.AdamW(learning_rate= learning_rate, weight_decay=weight_decay, use_ema=True, ema_momentum=momentum),
+    optimizer=tf.keras.optimizers.experimental.AdamW(learning_rate= learning_rate, weight_decay=weight_decay, use_ema=True, ema_momentum=momentum),
     loss=keras.losses.SparseCategoricalCrossentropy(),
     metrics=["accuracy"]
 )
