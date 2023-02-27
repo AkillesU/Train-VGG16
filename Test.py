@@ -16,11 +16,11 @@ print(gpus)
 
 epochs = 10
 batch_size = 32
-learning_rate = 0.0001
+learning_rate = 0.001
 weight_decay = 0.0005
 
 #Initializing wandb
-wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate, "weight_decay":weight_decay})
+wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate})
 
 #assign directory
 directory="/fast-data22/datasets/ILSVRC/2012/clsloc/val_white"

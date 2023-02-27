@@ -15,7 +15,7 @@ print(gpus)
 
 
 epochs = 2
-batch_size = 64
+batch_size = 32
 learning_rate = 0.001
 weight_decay = 0.0005
 momentum = 0.9
@@ -33,18 +33,22 @@ train_ds = tf.keras.utils.image_dataset_from_directory(
     batch_size=batch_size,
     image_size=(224,224),
     shuffle=True,#Shuffles data to create "random" dataset from directory
-    seed=123
+    seed=123,
+    validation_split=.2,
+    subset= "training"
 )
 #Creating validation dataset from fast-22 imagenet directory, defining batch size and prerpocessing image size
 validation_ds = tf.keras.utils.image_dataset_from_directory(
-    "/fast-data22/datasets/ILSVRC/2012/clsloc/val_white",
+    "/fast-data22/datasets/ILSVRC/2012/clsloc/train",
     labels='inferred',
     label_mode="int",
     color_mode="rgb",
     batch_size=batch_size,
     image_size=(224, 224),
     shuffle=True, #Shuffles data to create "random" dataset from directory
-    seed=123
+    seed=123,
+    validation_split=.2,
+    subset= "validation"
 )
 #Checking the image and label object shapes
 for images, labels in train_ds.take(1):
@@ -53,10 +57,10 @@ for images, labels in train_ds.take(1):
 
 #Creating model from keras library: pretrained vgg16 model
 inputs = keras.Input(shape=[224,224,3], batch_size= batch_size)
-x = tf.keras.applications.vgg16.preprocess_input(inputs)
-model = tf.keras.applications.VGG16(weights="imagenet")
-outputs = model(x)
-model = keras.Model(inputs, outputs)
+x = tf.keras.applications.vgg16.preprocess_input(inputs) #creating preprocessing object
+model = tf.keras.applications.VGG16(weights="imagenet") #Creating VGG-16 model
+outputs = model(x) #creating preprocessing input into vgg-16
+model = keras.Model(inputs, outputs) #defining final model
 
 #Setting model training hyperparameters
 model.compile(
