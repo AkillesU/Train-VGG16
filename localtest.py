@@ -76,7 +76,7 @@ model.compile(
 
 model.summary()
 #keras.utils.plot_model(model, show_shapes=True)
-model.fit(training, epochs=epochs, validation_data=validation, verbose=1, callbacks=[WandbCallback()])
+model.fit(training, epochs=epochs, validation_data=validation, verbose=1, callbacks=[WandbCallback()]) #todo Somehow the weights in the model are not being used. So check the past best run and the code for that. Then add preprocessing layer.
 
 results = model.evaluate(testing, batch_size=batch_size, callbacks=WandbCallback())
 
