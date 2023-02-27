@@ -15,7 +15,7 @@ print(gpus)
 
 
 epochs = 2
-batch_size = 32
+batch_size = 64
 learning_rate = 0.001
 weight_decay = 0.0005
 momentum = 0.9
@@ -64,8 +64,8 @@ model = keras.Model(inputs, outputs) #defining final model
 
 #Setting model training hyperparameters
 model.compile(
-    optimizer=tf.keras.optimizers.Adam(learning_rate= learning_rate),
-    loss=keras.losses.SparseCategoricalCrossentropy(),
+    optimizer=tf.keras.optimizers.experimental.AdamW(learning_rate= learning_rate, weight_decay=weight_decay, use_ema=True, ema_momentum=momentum),
+    loss=keras.losses.SparseCategoricalCrossentropy(from_logits=False),
     metrics=["accuracy"]
 )
 #Training model and sending stats to wandb
