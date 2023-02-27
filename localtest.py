@@ -17,6 +17,7 @@ epochs = 2
 batch_size = 32
 learning_rate = 0.001
 weight_decay = 0.0005
+momentum = 0.9
 
 #Initializing wandb
 wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate})
@@ -62,15 +63,13 @@ testing = tf.keras.utils.image_dataset_from_directory(
     seed=123
 )
 
-inputs = keras.Input(shape=[224,224,3], batch_size= batch_size)
-x = tf.keras.applications.vgg16.preprocess_input(inputs)
+
 model = tf.keras.applications.VGG16(weights="imagenet")
-outputs = model(x)
-model = keras.Model(inputs, outputs)
+
 
 #Setting model training hyperparameters
 model.compile(
-    optimizer=tf.keras.optimizers.Adam(learning_rate= learning_rate),
+    optimizer=tf.keras.optimizers.AdamW(learning_rate= learning_rate, weight_decay=weight_decay, use_ema=True, ema_momentum=momentum),
     loss=keras.losses.SparseCategoricalCrossentropy(),
     metrics=["accuracy"]
 )
