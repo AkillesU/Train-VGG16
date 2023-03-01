@@ -31,7 +31,7 @@ train_ds = tf.keras.utils.image_dataset_from_directory(
     label_mode= "int",
     color_mode="rgb",
     batch_size=batch_size,
-    image_size=tf.keras.layers.Resizing( height = 224, width = 224, crop_to_aspect_ratio=True), #cropping
+    image_size=(224,224), #cropping
     shuffle=True,#Shuffles data to create "random" dataset from directory
     seed=123,
     validation_split=0.2,
@@ -44,7 +44,7 @@ validation_ds = tf.keras.utils.image_dataset_from_directory(
     label_mode="int",
     color_mode="rgb",
     batch_size=batch_size,
-    image_size=tf.keras.layers.Resizing( height = 224, width = 224, crop_to_aspect_ratio=True), #cropping
+    image_size=(224,224), #cropping
     shuffle=True, #Shuffles data to create "random" dataset from directory
     seed=123,
     validation_split=0.2,
