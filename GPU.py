@@ -78,7 +78,14 @@ base_model = tf.keras.Sequential(
         vgg16.layers[13],
         vgg16.layers[14],
         vgg16.layers[15],
-        vgg16.layers[16]
+        vgg16.layers[16],
+        vgg16.layers[17],
+        vgg16.layers[18],
+        vgg16.layers[19],
+        vgg16.layers[20],
+        vgg16.layers[21],
+        vgg16.layers[22],
+        vgg16.layers[23]
     ]
 )
 output = base_model(x)
