@@ -57,12 +57,11 @@ for images, labels in train_ds.take(1):
 
 vgg16 = tf.keras.applications.VGG16(weights="imagenet")
 
-x = tf.keras.layers.Input(shape=(224,224,3))
-layer1 = tf.keras.applications.vgg16.preprocess_input(x)
 
-model = tf.keras.Sequential(
+input = tf.keras.applications.vgg16.preprocess_input()
+
+base_model = tf.keras.Sequential(
     [
-        layer1,
         vgg16.layers[1],
         vgg16.layers[2],
         vgg16.layers[3],
@@ -81,6 +80,8 @@ model = tf.keras.Sequential(
         vgg16.layers[16]
     ]
 )
+output = base_model(input)
+model = tf.keras.Model(input,output)
 
 #Setting model training hyperparameters
 model.compile(
