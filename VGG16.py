@@ -30,7 +30,7 @@ train_ds = tf.keras.utils.image_dataset_from_directory(
     labels = 'inferred',
     label_mode= "int",
     color_mode="rgb",
-    batch_size=1,
+    batch_size=1, #this is to try and preprocess input on an image level
     image_size=(224,224),
     shuffle=True,#Shuffles data to create "random" dataset from directory
     seed=123,
@@ -43,7 +43,7 @@ validation_ds = tf.keras.utils.image_dataset_from_directory(
     labels='inferred',
     label_mode="int",
     color_mode="rgb",
-    batch_size=1,
+    batch_size=1, #this is to try and preprocess input on an image level
     image_size=(224, 224),
     shuffle=True, #Shuffles data to create "random" dataset from directory
     seed=123,
@@ -62,7 +62,7 @@ model = tf.keras.applications.VGG16(weights="imagenet")
 model.summary()
 #model.trainable = False #Freeze all weights
 outputs = model(x)
-model = keras.Model(input = inputs, output = outputs)
+model = keras.Model(inputs,outputs)
 
 #Setting model training hyperparameters
 model.compile(
