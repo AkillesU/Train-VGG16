@@ -14,7 +14,7 @@ gpus = tf.config.list_physical_devices('GPU')
 print(gpus)
 
 
-epochs = 2
+epochs = 10
 batch_size = 32
 learning_rate = 0.0001
 weight_decay = 0.0005
@@ -101,7 +101,7 @@ model.compile(
 
 model.summary()
 #Training model and sending stats to wandb
-model.fit(train_ds, epochs= epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback()])
+model.fit(train_ds, epochs= epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback(), tf.keras.callbacks.EarlyStopping(monitor= "val_loss", patience=1, mode="max", verbose=1)])
 
 model.save_weights('trained_weights_VGG16/')
 
