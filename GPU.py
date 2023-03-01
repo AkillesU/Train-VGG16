@@ -58,7 +58,8 @@ for images, labels in train_ds.take(1):
 vgg16 = tf.keras.applications.VGG16(weights="imagenet")
 
 
-input = tf.keras.applications.vgg16.preprocess_input()
+inputs = keras.Input(shape=(224,224,3)) #Input layer takes in arrays with "width" and "height" (any) and 3 color channels
+x = tf.keras.applications.vgg16.preprocess_input(inputs) #Vgg16 preprocessing layer takes in arrays (224,224,3) and preprocesses: (scales, rgb to bgr etc.)
 
 base_model = tf.keras.Sequential(
     [
@@ -80,7 +81,7 @@ base_model = tf.keras.Sequential(
         vgg16.layers[16]
     ]
 )
-output = base_model(input)
+output = base_model(x)
 model = tf.keras.Model(input,output)
 
 #Setting model training hyperparameters
