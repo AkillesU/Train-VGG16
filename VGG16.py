@@ -59,6 +59,7 @@ for images, labels in train_ds.take(1):
 inputs = keras.Input(shape=[224,224,3], batch_size= batch_size)
 x = tf.keras.applications.vgg16.preprocess_input(inputs)
 model = tf.keras.applications.VGG16(weights="imagenet")
+model = model.trainable = False #Freeze all weights
 outputs = model(x)
 model = keras.Model(inputs, outputs)
 
