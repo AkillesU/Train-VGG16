@@ -14,8 +14,8 @@ gpus = tf.config.list_physical_devices('GPU')
 print(gpus)
 
 
-epochs = 4
-batch_size = 32
+epochs = 2
+batch_size = 16
 learning_rate = 0.0001
 weight_decay = 0.0005
 momentum = 0.9
@@ -59,16 +59,18 @@ for images, labels in train_ds.take(1):
 inputs = keras.Input(shape=[224,224,3], batch_size= batch_size)
 x = tf.keras.applications.vgg16.preprocess_input(inputs)
 model = tf.keras.applications.VGG16(weights="imagenet")
-model.trainable = False #Freeze all weights
+#model.trainable = False #Freeze all weights
 outputs = model(x)
 model = keras.Model(inputs, outputs)
 
 #Setting model training hyperparameters
 model.compile(
-    optimizer=tf.keras.optimizers.Adam(learning_rate= learning_rate), #Change to AdamW and add momentum and decay
+    optimizer=tf.keras.optimizers.experimental.AdamW(learning_rate= learning_rate, weight_decay=weight_decay, use_ema=True, ema_momentum=momentum), #Change to AdamW and add momentum and decay
     loss=keras.losses.SparseCategoricalCrossentropy(),
     metrics=["accuracy"]
 )
+
+model.summary()
 #Training model and sending stats to wandb
 model.fit(train_ds, epochs= epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback()])
 
