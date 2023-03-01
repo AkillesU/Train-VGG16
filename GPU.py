@@ -57,10 +57,12 @@ for images, labels in train_ds.take(1):
 
 vgg16 = tf.keras.applications.VGG16(weights="imagenet")
 
+x = tf.keras.layers.Input(shape=(224,224,3))
+layer1 = tf.keras.applications.vgg16.preprocess_input(x)
+
 model = tf.keras.Sequential(
     [
-        tf.keras.Input(shape=(224,224,3)),
-        tf.keras.applications.vgg16.preprocess_input(),
+        layer1,
         vgg16.layers[1],
         vgg16.layers[2],
         vgg16.layers[3],
