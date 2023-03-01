@@ -61,7 +61,7 @@ x = tf.keras.applications.vgg16.preprocess_input(inputs)
 model = tf.keras.applications.VGG16(weights="imagenet")
 model.trainable = False #Freeze all weights
 outputs = model(x)
-model = keras.Sequential(inputs, outputs)
+model = keras.Model(inputs, outputs)
 
 #Setting model training hyperparameters
 model.compile(
