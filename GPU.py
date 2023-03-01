@@ -82,7 +82,7 @@ base_model = tf.keras.Sequential(
     ]
 )
 output = base_model(x)
-model = tf.keras.Model(input,output)
+model = tf.keras.Model(inputs,output)
 
 #Setting model training hyperparameters
 model.compile(
