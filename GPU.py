@@ -63,6 +63,8 @@ x = tf.keras.applications.vgg16.preprocess_input(inputs) #Vgg16 preprocessing la
 
 base_model = tf.keras.Sequential(
     [
+
+        vgg16.layers[0],
         vgg16.layers[1],
         vgg16.layers[2],
         vgg16.layers[3],
@@ -84,8 +86,7 @@ base_model = tf.keras.Sequential(
         vgg16.layers[19],
         vgg16.layers[20],
         vgg16.layers[21],
-        vgg16.layers[22],
-        vgg16.layers[23]
+        vgg16.layers[22]
     ]
 )
 output = base_model(x)
