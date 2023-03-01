@@ -15,7 +15,7 @@ print(gpus)
 
 
 epochs = 2
-batch_size = 16
+batch_size = 64
 learning_rate = 0.0001
 weight_decay = 0.0005
 momentum = 0.9
@@ -30,7 +30,7 @@ train_ds = tf.keras.utils.image_dataset_from_directory(
     labels = 'inferred',
     label_mode= "int",
     color_mode="rgb",
-    batch_size=batch_size,
+    batch_size=1,
     image_size=(224,224),
     shuffle=True,#Shuffles data to create "random" dataset from directory
     seed=123,
@@ -43,7 +43,7 @@ validation_ds = tf.keras.utils.image_dataset_from_directory(
     labels='inferred',
     label_mode="int",
     color_mode="rgb",
-    batch_size=batch_size,
+    batch_size=1,
     image_size=(224, 224),
     shuffle=True, #Shuffles data to create "random" dataset from directory
     seed=123,
@@ -59,9 +59,10 @@ for images, labels in train_ds.take(1):
 inputs = keras.Input(shape=[224,224,3], batch_size= batch_size)
 x = tf.keras.applications.vgg16.preprocess_input(inputs)
 model = tf.keras.applications.VGG16(weights="imagenet")
+model.summary()
 #model.trainable = False #Freeze all weights
 outputs = model(x)
-model = keras.Model(inputs, outputs)
+model = keras.Model(input = inputs, output = outputs)
 
 #Setting model training hyperparameters
 model.compile(
