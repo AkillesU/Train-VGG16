@@ -31,7 +31,7 @@ train_ds = tf.keras.utils.image_dataset_from_directory(
     label_mode= "int",
     color_mode="rgb",
     batch_size=batch_size,
-    #image_size=(None,None), #Free image size at this point
+    image_size=tf.keras.layers.Resizing( height = 224, width = 224, crop_to_aspect_ratio=True), #cropping
     shuffle=True,#Shuffles data to create "random" dataset from directory
     seed=123,
     validation_split=0.2,
@@ -44,7 +44,7 @@ validation_ds = tf.keras.utils.image_dataset_from_directory(
     label_mode="int",
     color_mode="rgb",
     batch_size=batch_size,
-    #image_size=(None, None), #Free image size at this point
+    image_size=tf.keras.layers.Resizing( height = 224, width = 224, crop_to_aspect_ratio=True), #cropping
     shuffle=True, #Shuffles data to create "random" dataset from directory
     seed=123,
     validation_split=0.2,
@@ -56,9 +56,8 @@ for images, labels in train_ds.take(1):
     print(labels.shape)
 
 #Creating model from keras library: pretrained vgg16 model
-inputs = keras.Input(shape=(None,None,3)) #Input layer takes in arrays with "width" and "height" (any) and 3 color channels
-x = tf.keras.layers.Resizing(inputs, height = 224, width = 224, crop_to_aspect_ratio=True) #Resize crops input arrays to size (224,224,3)
-x = tf.keras.applications.vgg16.preprocess_input(x) #Vgg16 preprocessing layer takes in arrays (224,224,3) and preprocesses: (scales, rgb to bgr etc.)
+inputs = keras.Input(shape=(224,224,3)) #Input layer takes in arrays with "width" and "height" (any) and 3 color channels
+x = tf.keras.applications.vgg16.preprocess_input(inputs) #Vgg16 preprocessing layer takes in arrays (224,224,3) and preprocesses: (scales, rgb to bgr etc.)
 model = tf.keras.applications.VGG16(weights="imagenet") #Loading vgg-16 model with pretrained weights
 model.summary()
 #model.trainable = False #Freeze all weights
