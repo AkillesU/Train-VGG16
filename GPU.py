@@ -93,7 +93,7 @@ output = base_model(x)
 model = tf.keras.Model(inputs,output)
 
 for layer in range(0,20):
-    model.layers[4].layers[layer].trainable = False
+    model.layers[3].layers[layer].trainable = False
 
 #Setting model training hyperparameters
 model.compile(
