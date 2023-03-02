@@ -59,12 +59,13 @@ vgg16 = tf.keras.applications.VGG16(weights="imagenet")
 
 
 inputs = keras.Input(shape=(224,224,3)) #Input layer takes in arrays with "width" and "height" (any) and 3 color channels
-x = tf.keras.applications.vgg16.preprocess_input(inputs) #Vgg16 preprocessing layer takes in arrays (224,224,3) and preprocesses: (scales, rgb to bgr etc.)
+x = tf.keras.layers.RandomFlip(inputs, mode= "horizontal")
+x = tf.keras.layers.RandomContrast(x, factor=0.2)
+x = tf.keras.applications.vgg16.preprocess_input(x) #Vgg16 preprocessing layer takes in arrays (224,224,3) and preprocesses: (scales, rgb to bgr etc.)
 
 base_model = tf.keras.Sequential(
     [
-        tf.keras.layers.RandomFlip(mode="horizontal"),
-        tf.keras.layers.RandomContrast(factor=.2),
+
         vgg16.layers[0],
         vgg16.layers[1],
         vgg16.layers[2],
