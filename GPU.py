@@ -64,7 +64,7 @@ x = tf.keras.applications.vgg16.preprocess_input(inputs) #Vgg16 preprocessing la
 base_model = tf.keras.Sequential(
     [
         tf.keras.layers.RandomFlip(mode="horizontal"),
-        tf.keras.layers.RandomContrast(),
+        tf.keras.layers.RandomContrast(factor=[-128,128]),
         vgg16.layers[0],
         vgg16.layers[1],
         vgg16.layers[2],
