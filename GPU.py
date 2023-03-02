@@ -92,8 +92,8 @@ base_model = tf.keras.Sequential(
 output = base_model(x)
 model = tf.keras.Model(inputs,output)
 
-for layer in range(0,23):
-    model.layers[layer].trainable = False
+for layer in range(0,20):
+    model.layers[4].layers[layer].trainable = False
 
 #Setting model training hyperparameters
 model.compile(
