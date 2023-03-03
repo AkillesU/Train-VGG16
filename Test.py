@@ -31,6 +31,7 @@ images, labels = next(img_gen.flow_from_directory(directory=directory, #creating
                                                   target_size=(224,224),
                                                   batch_size=batch_size,
                                                   color_mode="rgb",
+                                                  class_mode="sparse", #labels int
                                                   shuffle=True,
                                                   seed=123,
                                                   subset= "training"))
@@ -44,6 +45,7 @@ images, labels = next(img_gen.flow_from_directory(directory=directory,#creating 
                                                   target_size=(224,224),
                                                   batch_size=batch_size,
                                                   color_mode="rgb",
+                                                  class_mode="sparse", #labels int
                                                   shuffle=True,
                                                   seed=123,
                                                   subset= "validation"))
