@@ -49,6 +49,19 @@ model_original = tf.keras.Model(inputs,original_output)
 finetuned_output = model_finetuned(x)
 model_finetuned = tf.keras.Model(inputs, finetuned_output)
 
+#compiling finetuned model
+model_finetuned.compile(
+    optimizer=tf.keras.optimizers.experimental.AdamW(learning_rate=0.0001), #Change to AdamW and add momentum and decay
+    loss=keras.losses.SparseCategoricalCrossentropy(),
+    metrics=["accuracy"]
+)
+#compiling original model
+model_original.compile(
+    optimizer=tf.keras.optimizers.experimental.AdamW(learning_rate=0.0001), #Change to AdamW and add momentum and decay
+    loss=keras.losses.SparseCategoricalCrossentropy(),
+    metrics=["accuracy"]
+)
+
 #testing original model
 original_results = model_original.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
 print(original_results)
