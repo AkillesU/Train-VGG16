@@ -35,7 +35,7 @@ test_ds = tf.keras.utils.image_dataset_from_directory(
 model_original = tf.keras.applications.VGG16(weights="imagenet")
 
 #Loading finetuned model from directory
-model_finetuned = tf.keras.models.load_model("$HOME/projects/Train-VGG16/wandb/latest-run/files/model-best.h5")
+model_finetuned = tf.keras.models.load_model("/home/akilles/projects/Train-VGG16/wandb/latest-run/files/model-best.h5")
 
 #creating preprocessing layers for both models
 inputs = keras.Input(shape=(224,224,3))
