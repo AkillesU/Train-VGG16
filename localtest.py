@@ -35,10 +35,8 @@ test_ds = tf.keras.utils.image_dataset_from_directory(
 model_original = tf.keras.applications.VGG16(weights="imagenet")
 
 #Loading finetuned model from directory
-model_finetuned = wandb.restore("model.h5",run_path="/home/akilles/projects/Train-VGG16/wandb/latest-run/run-4ebqmk10.wandb")
-model = tf.keras.applications.VGG16()
-model.load_weights(model_finetuned.name)
-model_finetuned = model
+model_finetuned = tf.keras.models.load_model("finetuned/")
+
 #creating preprocessing layers for both models
 inputs = keras.Input(shape=(224,224,3))
 x = tf.keras.applications.vgg16.preprocess_input(inputs)
