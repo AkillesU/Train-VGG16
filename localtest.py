@@ -13,73 +13,45 @@ from wandb.keras import WandbCallback
 gpus = tf.config.list_physical_devices('GPU')
 print(gpus)
 
-epochs = 2
+
 batch_size = 32
-learning_rate = 0.001
-weight_decay = 0.0005
-momentum = 0.9
 
 #Initializing wandb
-wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate})
+wandb.init(project="Train-VGG16", entity="a-rechardt", config={"batch_size":batch_size})
 
-#assign directory
-directory="/fast-data22/datasets/ILSVRC/2012/clsloc/train"
 
-training = tf.keras.utils.image_dataset_from_directory(
-    directory,
-    labels = 'inferred',
-    label_mode= "int",
+#Creating test dataset from fast-22 imagenet directory, defining batch size and prerpocessing image size
+test_ds = tf.keras.utils.image_dataset_from_directory(
+    "/fast-data22/datasets/ILSVRC/2012/clsloc/val_white",
+    labels='inferred',
+    label_mode="int",
     color_mode="rgb",
     batch_size=batch_size,
-    image_size=(224,224),
-    shuffle=True,#Shuffles data to create "random" dataset from directory
-    seed=123,
-    subset="training",
-    validation_split= 0.2
-)
-validation = tf.keras.utils.image_dataset_from_directory(
-    directory,
-    labels = 'inferred',
-    label_mode= "int",
-    color_mode="rgb",
-    batch_size=batch_size,
-    image_size=(224,224),
-    shuffle=True,#Shuffles data to create "random" dataset from directory
-    seed=123,
-    subset="validation",
-    validation_split= 0.2
-)
-#assign directory
-testdir="/fast-data22/datasets/ILSVRC/2012/clsloc/val_white"
-
-testing = tf.keras.utils.image_dataset_from_directory(
-    testdir,
-    labels = 'inferred',
-    label_mode= "int",
-    color_mode="rgb",
-    batch_size=batch_size,
-    image_size=(224,224),
-    shuffle=True,#Shuffles data to create "random" dataset from directory
+    image_size=(224,224), #cropping
+    shuffle=True, #Shuffles data to create "random" dataset from directory
     seed=123
 )
+#loading pretrained keras model
+model_original = tf.keras.applications.VGG16(weights="imagenet")
 
+#Loading finetuned model from directory
+model_finetuned = tf.keras.models.load_model("wandb/latest-run/files/model-best.h5")
 
-model = tf.keras.applications.VGG16(weights="imagenet")
+#creating preprocessing layers for both models
+inputs = keras.Input(shape=(224,224,3))
+x = tf.keras.applications.vgg16.preprocess_input(inputs)
 
+#creating og model with preprocessing
+original_output = model_original(x)
+model_original = tf.keras.Model(inputs,original_output)
 
-#Setting model training hyperparameters
-model.compile(
-    optimizer=tf.keras.optimizers.experimental.AdamW(learning_rate= learning_rate, weight_decay=weight_decay, use_ema=True, ema_momentum=momentum),
-    loss=keras.losses.SparseCategoricalCrossentropy(),
-    metrics=["accuracy"]
-)
+#creating finetuned model with preprocessing
+finetuned_output = model_finetuned(x)
+model_finetuned = tf.keras.Model(inputs, finetuned_output)
 
-model.summary()
-#keras.utils.plot_model(model, show_shapes=True)
-model.fit(training, epochs=epochs, validation_data=validation, verbose=1, callbacks=[WandbCallback()]) #todo Somehow the weights in the model are not being used. So check the past best run and the code for that. Then add preprocessing layer.
-
-results = model.evaluate(testing, batch_size=batch_size, callbacks=WandbCallback())
-
-print(results)
-wandb.finish()
-exit("Done")
+#testing original model
+original_results = model_original.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
+print(original_results)
+#testing finetuned model
+finetuned_results = model_finetuned.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
+print(finetuned_results)
