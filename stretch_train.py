@@ -14,7 +14,7 @@ gpus = tf.config.list_physical_devices('GPU')
 print(gpus)
 
 
-epochs = 10
+epochs = 1
 batch_size = 32
 learning_rate = 0.0001
 weight_decay = 0.0005
