@@ -50,6 +50,18 @@ validation_ds = tf.keras.utils.image_dataset_from_directory(
     validation_split=0.2,
     subset= "validation"
 )
+#Creating test dataset from fast-22 imagenet directory, defining batch size and prerpocessing image size
+test_ds = tf.keras.utils.image_dataset_from_directory(
+    "/fast-data22/datasets/ILSVRC/2012/clsloc/val_white",
+    labels='inferred',
+    label_mode="int",
+    color_mode="rgb",
+    batch_size=batch_size,
+    image_size=(224,224), #cropping
+    shuffle=True, #Shuffles data to create "random" dataset from directory
+    seed=123
+)
+
 #Checking the image and label object shapes
 for images, labels in train_ds.take(1):
     print(images.shape)
@@ -103,9 +115,11 @@ model.compile(
 )
 
 model.summary()
-#Training model and sending stats to wandb
-model.fit(train_ds, epochs=epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback(), tf.keras.callbacks.EarlyStopping(monitor= "val_loss", patience=2, mode="auto", verbose=1)])
 
+model.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
+#Training model and sending stats to wandb
+model.fit(train_ds, epochs=epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback(), tf.keras.callbacks.EarlyStopping(monitor= "val_loss", patience=1, mode="auto", verbose=1)])
+model.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
 model.save_weights('trained_weights_VGG16/')
 
 wandb.finish()
