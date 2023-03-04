@@ -55,3 +55,6 @@ print(original_results)
 #testing finetuned model
 finetuned_results = model_finetuned.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
 print(finetuned_results)
+
+wandb.finish()
+exit("Done")
