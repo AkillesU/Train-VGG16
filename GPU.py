@@ -20,7 +20,7 @@ learning_rate = 0.0001
 weight_decay = 0.0005
 momentum = 0.9
 #Initializing wandb
-wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate})
+wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate, "momentum":momentum, "weight_decay":weight_decay})
 
 
 
@@ -92,7 +92,7 @@ base_model = tf.keras.Sequential(
 output = base_model(x)
 model = tf.keras.Model(inputs,output)
 
-for layer in range(0,20):
+for layer in range(0,21):
     model.layers[3].layers[layer].trainable = False
 
 #Setting model training hyperparameters

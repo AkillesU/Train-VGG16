@@ -19,14 +19,14 @@ batch_size = 32
 learning_rate = 0.0001
 weight_decay = 0.0005
 momentum = 0.9
-directory = "/fast-data22/datasets/ILSVRC/2012/clsloc/train"
-
+#directory = "/fast-data22/datasets/ILSVRC/2012/clsloc/train"
+directory = "C:/Users/arech/Documents/Imagenet/imagenet-a"
 #Initializing wandb
-wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate})
+#wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate})
 
-img_gen = tf.keras.preprocessing.image.ImageDataGenerator(validation_split=0.2, channel_shift_range=0.2, horizontal_flip=True,) #Creating imagegenerator
+img_gen = tf.keras.preprocessing.image.ImageDataGenerator(validation_split=0.2, horizontal_flip= True, channel_shift_range=0.2) #Creating imagegenerator
 
-images, labels = next(img_gen.flow_from_directory(directory=directory, #creating images and labels for training ds
+train_gen = img_gen.flow_from_directory(directory=directory, #creating images and labels for training ds
                                                   keep_aspect_ratio=True,
                                                   target_size=(224,224),
                                                   batch_size=batch_size,
@@ -34,13 +34,13 @@ images, labels = next(img_gen.flow_from_directory(directory=directory, #creating
                                                   class_mode="sparse", #labels int
                                                   shuffle=True,
                                                   seed=123,
-                                                  subset= "training"))
+                                                  subset= "training")
 
-train_ds = tf.data.Dataset.from_generator(lambda: img_gen.flow_from_directory(directory), #creating training ds
+train_ds = tf.data.Dataset.from_generator(lambda: train_gen.flow_from_directory(directory), #creating training ds
                                           output_types=(tf.float32, tf.float32),
-                                          output_shapes=([batch_size,224,224,3], [batch_size,1000])) #change to 1000
+                                          output_shapes=([batch_size,224,224,3], [32,1000])) #change to 1000
 
-images, labels = next(img_gen.flow_from_directory(directory=directory,#creating images and labels for validation ds
+val_gen = img_gen.flow_from_directory(directory=directory,#creating images and labels for validation ds
                                                   keep_aspect_ratio=True,
                                                   target_size=(224,224),
                                                   batch_size=batch_size,
@@ -48,11 +48,11 @@ images, labels = next(img_gen.flow_from_directory(directory=directory,#creating 
                                                   class_mode="sparse", #labels int
                                                   shuffle=True,
                                                   seed=123,
-                                                  subset= "validation"))
+                                                  subset= "validation")
 
-validation_ds = tf.data.Dataset.from_generator(lambda: img_gen.flow_from_directory(directory), #creating validation ds
+validation_ds = tf.data.Dataset.from_generator(lambda: val_gen.flow_from_directory(directory), #creating validation ds
                                           output_types=(tf.float32, tf.float32),
-                                          output_shapes=([batch_size,224,224,3], [batch_size,1000])) #change to 1000
+                                          output_shapes=([batch_size,224,224,3], [32 ,1000])) #change to 1000
 
 print(train_ds)
 
@@ -105,16 +105,18 @@ model = tf.keras.Model(inputs,output)
 #Setting model training hyperparameters
 model.compile(
     optimizer=tf.keras.optimizers.experimental.AdamW(learning_rate= learning_rate, weight_decay=weight_decay, use_ema=True, ema_momentum=momentum), #Change to AdamW and add momentum and decay
-    loss=keras.losses.SparseCategoricalCrossentropy(),
+    loss=keras.losses.SparseCategoricalCrossentropy(from_logits=False),
     metrics=["accuracy"]
 )
 
 model.summary()
 #Training model and sending stats to wandb
-model.fit(train_ds, epochs= epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback()]) #
+model.fit(train_ds, epochs= epochs, verbose=1, validation_data=validation_ds) #, callbacks=[WandbCallback()]
 
 model.save_weights('trained_weights_VGG16/')
 
 wandb.finish()
 
 exit("Done")
+
+model.fit_generator
