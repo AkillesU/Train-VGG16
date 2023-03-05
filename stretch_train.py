@@ -1,6 +1,6 @@
 import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 
 
@@ -116,10 +116,13 @@ model.compile(
 
 model.summary()
 
-model.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
+initial_test = model.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
+print(initial_test)
 #Training model and sending stats to wandb
-model.fit(train_ds, epochs=epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback(), tf.keras.callbacks.EarlyStopping(monitor= "val_accuracy", patience=1, mode="auto", verbose=1), tf.keras.callbacks.ReduceLROnPlateau(monitor="val_accuracy", factor=0.6, patience=1, min_lr=0.00001)])
-model.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
+model.fit(train_ds, epochs=epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback(), tf.keras.callbacks.ModelCheckpoint(filepath="trained_weights_VGG16/", save_weights_only=True, save_freq=4000)])
+
+final_test = model.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
+print(final_test)
 model.save_weights('trained_weights_VGG16/')
 
 wandb.finish()
