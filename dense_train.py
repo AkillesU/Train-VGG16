@@ -14,7 +14,7 @@ gpus = tf.config.list_physical_devices('GPU')
 print(gpus)
 
 
-epochs = 1
+epochs = 10
 batch_size = 32
 learning_rate = 0.00001
 weight_decay = 0.0005
@@ -24,7 +24,7 @@ wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, 
 
 #defining checkpoint callback
 cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath="dense_train{batch:02d}", save_weights_only=False, save_freq=4000, verbose=1)
-
+earlystopping = tf.keras.callbacks.EarlyStopping(monitor="val_accuracy", mode="auto", patience=1, verbose=1)
 #Creating training dataset from fast-22 imagenet directory, defining batch size and prerpocessing image size
 train_ds = tf.keras.utils.image_dataset_from_directory(
     "/fast-data22/datasets/ILSVRC/2012/clsloc/train",
@@ -120,7 +120,7 @@ model.summary()
 initial_test = model.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
 print(initial_test)
 #Training model and sending stats to wandb
-model.fit(train_ds, epochs=epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback(),cp_callback ])
+model.fit(train_ds, epochs=epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback(),cp_callback,earlystopping])
 
 final_test = model.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
 print(final_test)
