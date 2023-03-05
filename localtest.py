@@ -39,7 +39,8 @@ model_finetuned1 = tf.keras.models.load_model(filepath=" checkpoints/train_fully
 
 #Loading finetuned model
 model_finetuned2 = tf.keras.applications.VGG16()
-model_finetuned2.load_weights("vgg16_weights.h5")
+weights = "vgg16_weights.h5"
+model_finetuned2.load_weights(weights.name)
 
 
 #creating preprocessing layers for both models
