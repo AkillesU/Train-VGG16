@@ -120,10 +120,11 @@ model.summary()
 initial_test = model.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
 print(initial_test)
 #Training model and sending stats to wandb
-model.fit(train_ds, epochs=epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback(), ])
+model.fit(train_ds, epochs=epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback(),cp_callback ])
 
 final_test = model.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
 print(final_test)
+
 model.save_weights('trained_weights_VGG16/')
 
 wandb.finish()
