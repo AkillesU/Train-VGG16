@@ -23,7 +23,7 @@ momentum = 0.9
 wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate, "momentum":momentum, "weight_decay":weight_decay})
 
 #defining checkpoint callback
-cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath="checkpoints/cp.ckpt", save_weights_only=True, save_freq=4000, verbose=1)
+cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath="cp.ckpt", save_weights_only=False, save_freq=4000, verbose=1)
 
 #Creating training dataset from fast-22 imagenet directory, defining batch size and prerpocessing image size
 train_ds = tf.keras.utils.image_dataset_from_directory(
@@ -125,7 +125,7 @@ model.fit(train_ds, epochs=epochs, verbose=1, validation_data=validation_ds, cal
 final_test = model.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
 print(final_test)
 
-model.save_weights('trained_weights_VGG16/')
+model.save_weights('vgg16_weights.h5')
 
 wandb.finish()
 
