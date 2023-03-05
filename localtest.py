@@ -49,13 +49,6 @@ x = tf.keras.applications.vgg16.preprocess_input(inputs)
 original_output = model_original(x)
 model_original = tf.keras.Model(inputs,original_output)
 
-#creating finetuned model with preprocessing
-finetuned_output = model_finetuned1(x)
-model_finetuned1 = tf.keras.Model(inputs, finetuned_output)
-
-#creating finetuned model with preprocessing
-finetuned_output2 = model_finetuned2(x)
-model_finetuned2 = tf.keras.Model(inputs, finetuned_output2)
 
 
 #compiling finetuned model
