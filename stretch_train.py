@@ -1,6 +1,6 @@
 import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 
 
@@ -23,7 +23,7 @@ momentum = 0.9
 wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate, "momentum":momentum, "weight_decay":weight_decay})
 
 #defining checkpoint callback
-cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=" checkpoints/train_fully{batch:02d}", save_weights_only=False, save_freq=4000, verbose=1)
+cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath="checkpoints/dense_train{batch:02d}", save_weights_only=False, save_freq=4000, verbose=1)
 
 #Creating training dataset from fast-22 imagenet directory, defining batch size and prerpocessing image size
 train_ds = tf.keras.utils.image_dataset_from_directory(
@@ -105,8 +105,8 @@ base_model = tf.keras.Sequential(
 output = base_model(x)
 model = tf.keras.Model(inputs,output)
 
-#for layer in range(0,19):
-#    model.layers[3].layers[layer].trainable = False
+for layer in range(0,19):
+    model.layers[3].layers[layer].trainable = False
 
 #Setting model training hyperparameters
 model.compile(
@@ -124,8 +124,6 @@ model.fit(train_ds, epochs=epochs, verbose=1, validation_data=validation_ds, cal
 
 final_test = model.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
 print(final_test)
-
-model.save_weights('vgg16_weights.h5')
 
 wandb.finish()
 
