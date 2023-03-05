@@ -1,6 +1,6 @@
 import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 
 
@@ -23,7 +23,7 @@ momentum = 0.9
 wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate, "momentum":momentum, "weight_decay":weight_decay})
 
 #defining checkpoint callback
-cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath="dense_train{batch:02d}", save_weights_only=False, save_freq=4000, verbose=1)
+cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath="dense_train{batch:02d}epoch{epoch:02d}", save_weights_only=False, save_freq=4000, verbose=1)
 earlystopping = tf.keras.callbacks.EarlyStopping(monitor="val_accuracy", mode="auto", patience=1, verbose=1)
 #Creating training dataset from fast-22 imagenet directory, defining batch size and prerpocessing image size
 train_ds = tf.keras.utils.image_dataset_from_directory(
