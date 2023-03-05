@@ -23,7 +23,7 @@ momentum = 0.9
 wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate, "momentum":momentum, "weight_decay":weight_decay})
 
 #defining checkpoint callback
-cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath="cp.ckpt{batch:02d}", save_weights_only=False, save_freq=4000, verbose=1)
+cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=" checkpoints/train_fully{batch:02d}", save_weights_only=False, save_freq=4000, verbose=1)
 
 #Creating training dataset from fast-22 imagenet directory, defining batch size and prerpocessing image size
 train_ds = tf.keras.utils.image_dataset_from_directory(
@@ -35,7 +35,7 @@ train_ds = tf.keras.utils.image_dataset_from_directory(
     image_size=(224,224), #cropping
     shuffle=True,#Shuffles data to create "random" dataset from directory
     seed=123,
-    validation_split=0.5,
+    validation_split=0.2,
     subset= "training"
 )
 #Creating validation dataset from fast-22 imagenet directory, defining batch size and prerpocessing image size
@@ -48,7 +48,7 @@ validation_ds = tf.keras.utils.image_dataset_from_directory(
     image_size=(224,224), #cropping
     shuffle=True, #Shuffles data to create "random" dataset from directory
     seed=123,
-    validation_split=0.5,
+    validation_split=0.2,
     subset= "validation"
 )
 #Creating test dataset from fast-22 imagenet directory, defining batch size and prerpocessing image size
@@ -105,7 +105,7 @@ base_model = tf.keras.Sequential(
 output = base_model(x)
 model = tf.keras.Model(inputs,output)
 
-for layer in range(0,21):
+for layer in range(0,19):
     model.layers[3].layers[layer].trainable = False
 
 #Setting model training hyperparameters

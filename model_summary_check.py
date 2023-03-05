@@ -21,4 +21,4 @@ outputs = model(x)
 model = tf.keras.Model(inputs,outputs)
 
 
-print(model.layers[3].layers[1])
+print(model.layers[3])
