@@ -35,7 +35,10 @@ test_ds = tf.keras.utils.image_dataset_from_directory(
 model_original = tf.keras.applications.VGG16(weights="imagenet")
 
 #Loading finetuned model from directory
-model_finetuned = tf.keras.models.load_model(filepath="cp.ckpt")
+model_finetuned1 = tf.keras.models.load_model(filepath="cp.ckpt4000")
+
+#Loading finetuned model
+model_finetuned2 = tf.keras.models.load_model(filepath="cp.ckpt8000")
 
 
 #creating preprocessing layers for both models
@@ -47,11 +50,22 @@ original_output = model_original(x)
 model_original = tf.keras.Model(inputs,original_output)
 
 #creating finetuned model with preprocessing
-finetuned_output = model_finetuned(x)
-model_finetuned = tf.keras.Model(inputs, finetuned_output)
+finetuned_output = model_finetuned1(x)
+model_finetuned1 = tf.keras.Model(inputs, finetuned_output)
+
+#creating finetuned model with preprocessing
+finetuned_output2 = model_finetuned2(x)
+model_finetuned2 = tf.keras.Model(inputs, finetuned_output2)
+
 
 #compiling finetuned model
-model_finetuned.compile(
+model_finetuned1.compile(
+    optimizer=tf.keras.optimizers.experimental.AdamW(learning_rate=0.0001), #Change to AdamW and add momentum and decay
+    loss=keras.losses.SparseCategoricalCrossentropy(),
+    metrics=["accuracy"]
+)
+
+model_finetuned2.compile(
     optimizer=tf.keras.optimizers.experimental.AdamW(learning_rate=0.0001), #Change to AdamW and add momentum and decay
     loss=keras.losses.SparseCategoricalCrossentropy(),
     metrics=["accuracy"]
@@ -67,8 +81,10 @@ model_original.compile(
 original_results = model_original.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
 print(original_results)
 #testing finetuned model
-finetuned_results = model_finetuned.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
+finetuned_results = model_finetuned1.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
 print(finetuned_results)
+finetuned_results2 = model_finetuned2.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
+print(finetuned_results2)
 
 wandb.finish()
 exit("Done")
