@@ -38,7 +38,7 @@ model_original = tf.keras.applications.VGG16(weights="imagenet")
 model_finetuned1 = tf.keras.models.load_model(filepath=" checkpoints/train_fully12000")
 
 #Loading finetuned model
-model_finetuned2 = tf.keras.models.load_model(filepath=" checkpoints/train_fully20000")
+model_finetuned2 = tf.keras.models.load_model(filepath=" checkpoints/train_fully32000")
 
 
 #creating preprocessing layers for both models
