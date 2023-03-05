@@ -35,10 +35,13 @@ test_ds = tf.keras.utils.image_dataset_from_directory(
 model_original = tf.keras.applications.VGG16(weights="imagenet")
 
 #Loading finetuned model from directory
-model_finetuned1 = tf.keras.models.load_model(filepath=" checkpoints/train_fully12000")
+model_finetuned1 = tf.keras.models.load_model(filepath=" checkpoints/final_train31970")
 
 #Loading finetuned model
-model_finetuned2 = tf.keras.models.load_model(filepath=" checkpoints/train_fully32000")
+model_finetuned2 = tf.keras.models.load_model(filepath=" checkpoints/final_train32000")
+
+#Loading finetuned model
+model_finetuned3 = tf.keras.models.load_model(filepath=" checkpoints/final_train31940")
 
 
 #creating preprocessing layers for both models
@@ -63,6 +66,12 @@ model_finetuned2.compile(
     loss=keras.losses.SparseCategoricalCrossentropy(),
     metrics=["accuracy"]
 )
+model_finetuned3.compile(
+    optimizer=tf.keras.optimizers.experimental.AdamW(learning_rate=0.0001), #Change to AdamW and add momentum and decay
+    loss=keras.losses.SparseCategoricalCrossentropy(),
+    metrics=["accuracy"]
+)
+
 #compiling original model
 model_original.compile(
     optimizer=tf.keras.optimizers.experimental.AdamW(learning_rate=0.0001), #Change to AdamW and add momentum and decay
@@ -73,11 +82,16 @@ model_original.compile(
 #testing original model
 original_results = model_original.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
 print(original_results)
+
+finetuned_results2 = model_finetuned2.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
+print(finetuned_results2)
+
 #testing finetuned model
 finetuned_results = model_finetuned1.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
 print(finetuned_results)
-finetuned_results2 = model_finetuned2.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
-print(finetuned_results2)
+#testing finetuned model
+finetuned_results3 = model_finetuned3.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
+print(finetuned_results3)
 
 wandb.finish()
 exit("Done")
