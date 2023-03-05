@@ -16,7 +16,7 @@ print(gpus)
 
 epochs = 1
 batch_size = 32
-learning_rate = 0.0001
+learning_rate = 0.00001
 weight_decay = 0.0005
 momentum = 0.9
 #Initializing wandb
@@ -118,7 +118,7 @@ model.summary()
 
 model.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
 #Training model and sending stats to wandb
-model.fit(train_ds, epochs=epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback(), tf.keras.callbacks.EarlyStopping(monitor= "val_loss", patience=1, mode="auto", verbose=1)])
+model.fit(train_ds, epochs=epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback(), tf.keras.callbacks.EarlyStopping(monitor= "val_accuracy", patience=1, mode="auto", verbose=1), tf.keras.callbacks.ReduceLROnPlateau(monitor="val_accuracy", factor=0.6, patience=1, min_lr=0.00001)])
 model.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
 model.save_weights('trained_weights_VGG16/')
 
