@@ -22,7 +22,8 @@ momentum = 0.9
 #Initializing wandb
 wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate, "momentum":momentum, "weight_decay":weight_decay})
 
-
+#defining checkpoint callback
+cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath="checkpoints/", save_weights_only=True, save_freq=4000, verbose=1)
 
 #Creating training dataset from fast-22 imagenet directory, defining batch size and prerpocessing image size
 train_ds = tf.keras.utils.image_dataset_from_directory(
@@ -34,7 +35,7 @@ train_ds = tf.keras.utils.image_dataset_from_directory(
     image_size=(224,224), #cropping
     shuffle=True,#Shuffles data to create "random" dataset from directory
     seed=123,
-    validation_split=0.2,
+    validation_split=0.5,
     subset= "training"
 )
 #Creating validation dataset from fast-22 imagenet directory, defining batch size and prerpocessing image size
@@ -47,7 +48,7 @@ validation_ds = tf.keras.utils.image_dataset_from_directory(
     image_size=(224,224), #cropping
     shuffle=True, #Shuffles data to create "random" dataset from directory
     seed=123,
-    validation_split=0.2,
+    validation_split=0.5,
     subset= "validation"
 )
 #Creating test dataset from fast-22 imagenet directory, defining batch size and prerpocessing image size
@@ -119,7 +120,7 @@ model.summary()
 initial_test = model.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
 print(initial_test)
 #Training model and sending stats to wandb
-model.fit(train_ds, epochs=epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback(), tf.keras.callbacks.ModelCheckpoint(filepath="trained_weights_VGG16/", save_weights_only=True, save_freq=4000)])
+model.fit(train_ds, epochs=epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback(), ])
 
 final_test = model.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
 print(final_test)
