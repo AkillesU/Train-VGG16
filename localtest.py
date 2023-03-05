@@ -1,6 +1,6 @@
 import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 
 import keras.losses
@@ -35,10 +35,10 @@ test_ds = tf.keras.utils.image_dataset_from_directory(
 model_original = tf.keras.applications.VGG16(weights="imagenet")
 
 #Loading finetuned model from directory
-model_finetuned1 = tf.keras.models.load_model(filepath="cp.ckpt4000")
+model_finetuned1 = tf.keras.models.load_model(filepath=" checkpoints/train_fully4000")
 
 #Loading finetuned model
-model_finetuned2 = tf.keras.models.load_model(filepath="cp.ckpt8000")
+model_finetuned2 = tf.keras.models.load_model(filepath=" checkpoints/train_fully8000")
 
 
 #creating preprocessing layers for both models
