@@ -68,42 +68,7 @@ for images, labels in train_ds.take(1):
     print(images.shape)
     print(labels.shape)
 
-vgg16 = tf.keras.applications.VGG16(weights="imagenet")
-
-
-inputs = keras.Input(shape=(224,224,3)) #Input layer takes in arrays with "width" and "height" (any) and 3 color channels
-x = tf.keras.applications.vgg16.preprocess_input(inputs) #Vgg16 preprocessing layer takes in arrays (224,224,3) and preprocesses: (scales, rgb to bgr etc.)
-
-base_model = tf.keras.Sequential(
-    [
-
-        vgg16.layers[0],
-        vgg16.layers[1],
-        vgg16.layers[2],
-        vgg16.layers[3],
-        vgg16.layers[4],
-        vgg16.layers[5],
-        vgg16.layers[6],
-        vgg16.layers[7],
-        vgg16.layers[8],
-        vgg16.layers[9],
-        vgg16.layers[10],
-        vgg16.layers[11],
-        vgg16.layers[12],
-        vgg16.layers[13],
-        vgg16.layers[14],
-        vgg16.layers[15],
-        vgg16.layers[16],
-        vgg16.layers[17],
-        vgg16.layers[18],
-        vgg16.layers[19],
-        vgg16.layers[20],
-        vgg16.layers[21],
-        vgg16.layers[22]
-    ]
-)
-output = base_model(x)
-model = tf.keras.Model(inputs,output)
+model = tf.keras.models.load_model("Models/full_train32000epoch01")
 
 for layer in range(0,21):
     model.layers[3].layers[layer].trainable = False
