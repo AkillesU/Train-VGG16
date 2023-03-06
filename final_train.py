@@ -24,7 +24,7 @@ wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, 
 
 #defining checkpoint callback
 cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath="final_train{batch:02d}epoch{epoch:02d}", save_weights_only=False, save_freq=4000, verbose=1)
-earlystopping = tf.keras.callbacks.EarlyStopping(monitor="val_accuracy", mode="auto", patience=1, verbose=1)
+earlystopping = tf.keras.callbacks.EarlyStopping(monitor="val_loss", mode="auto", patience=1, verbose=1)
 #Creating training dataset from fast-22 imagenet directory, defining batch size and prerpocessing image size
 train_ds = tf.keras.utils.image_dataset_from_directory(
     "/fast-data22/datasets/ILSVRC/2012/clsloc/train",
