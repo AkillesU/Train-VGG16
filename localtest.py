@@ -41,7 +41,7 @@ model_finetuned3 = tf.keras.models.load_model(filepath="final_train31970epoch02"
 model_finetuned1 = tf.keras.models.load_model(filepath="final_train32000epoch01")
 
 #Loading finetuned model
-model_finetuned2 = tf.keras.models.load_model(filepath="final_train20000epoch01")
+model_finetuned2 = tf.keras.models.load_model(filepath="final_train12000epoch01")
 
 
 #creating preprocessing layers for both models
