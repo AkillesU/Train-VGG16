@@ -14,60 +14,59 @@ from wandb.keras import WandbCallback
 gpus = tf.config.list_physical_devices('GPU')
 print(gpus)
 
+#Setting hyperparameters for training
 epochs = 10
 batch_size = 32
 learning_rate = 0.0001
 weight_decay = 0.0005
 momentum = 0.9
-#directory = "/fast-data22/datasets/ILSVRC/2012/clsloc/train"
-directory = "C:/Users/arech/Documents/Imagenet/imagenet-a"
+
+directory = "/fast-data22/datasets/ILSVRC/2012/clsloc/train" #training/validation data directory
+
 #Initializing wandb
-#wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate})
+wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate})
 
-img_gen = tf.keras.preprocessing.image.ImageDataGenerator(validation_split=0.2, horizontal_flip= True, channel_shift_range=0.2) #Creating imagegenerator
-
-train_gen = img_gen.flow_from_directory(directory=directory, #creating images and labels for training ds
+#Creating dataset generator with augmentation (horiz_flip and RGB shift)
+img_gen = tf.keras.preprocessing.image.ImageDataGenerator(validation_split=0.2, horizontal_flip= True, channel_shift_range=0.2)
+#Creating specific training data generator
+train_gen = img_gen.flow_from_directory(directory=directory,
                                                   keep_aspect_ratio=True,
                                                   target_size=(224,224),
                                                   batch_size=batch_size,
                                                   color_mode="rgb",
-                                                  class_mode="sparse", #labels int
+                                                  class_mode="sparse", #labels as int
                                                   shuffle=True,
                                                   seed=123,
                                                   subset= "training")
-
+#Creating training tf.data.Dataset object
 train_ds = tf.data.Dataset.from_generator(lambda: train_gen.flow_from_directory(directory), #creating training ds
                                           output_types=(tf.float32, tf.float32),
                                           output_shapes=([batch_size,224,224,3], [32,1000])) #change to 1000
-
+#Creating specific validation data generator
 val_gen = img_gen.flow_from_directory(directory=directory,#creating images and labels for validation ds
                                                   keep_aspect_ratio=True,
                                                   target_size=(224,224),
                                                   batch_size=batch_size,
                                                   color_mode="rgb",
-                                                  class_mode="sparse", #labels int
+                                                  class_mode="sparse", #labels as int
                                                   shuffle=True,
                                                   seed=123,
                                                   subset= "validation")
-
+#Creating validation tf.data.Dataset object
 validation_ds = tf.data.Dataset.from_generator(lambda: val_gen.flow_from_directory(directory), #creating validation ds
                                           output_types=(tf.float32, tf.float32),
                                           output_shapes=([batch_size,224,224,3], [32 ,1000])) #change to 1000
 
 print(train_ds)
 
-#for images, labels in train_ds.take(1):
-#  print('images.shape: ', images.shape)
-#  print('labels.shape: ', labels.shape)
-
-
 #Creating model from keras library: pretrained vgg16 model
 vgg16 = tf.keras.applications.VGG16(weights="imagenet")
 
 
-inputs = keras.Input(shape=(224,224,3)) #Input layer takes in arrays with "width" and "height" (any) and 3 color channels
+inputs = keras.Input(shape=(224,224,3)) #Input layer takes in arrays with shape (224,224,3). Guess this is redundant with the current specs...
 x = tf.keras.applications.vgg16.preprocess_input(inputs) #Vgg16 preprocessing layer takes in arrays (224,224,3) and preprocesses: (scales, rgb to bgr etc.)
 
+#Specifying base model structure with keras.Sequential. This is to enable the addition of keras.models.layers if need be.
 base_model = tf.keras.Sequential(
     [
 
@@ -97,26 +96,21 @@ base_model = tf.keras.Sequential(
     ]
 )
 output = base_model(x)
+#Defining final model with preprocessing before the base model
 model = tf.keras.Model(inputs,output)
 
-
-
-
-#Setting model training hyperparameters
+#Compiling model and setting hyperparameters
 model.compile(
     optimizer=tf.keras.optimizers.experimental.AdamW(learning_rate= learning_rate, weight_decay=weight_decay, use_ema=True, ema_momentum=momentum), #Change to AdamW and add momentum and decay
     loss=keras.losses.SparseCategoricalCrossentropy(from_logits=False),
     metrics=["accuracy"]
 )
-
+#Checking model structure
 model.summary()
-#Training model and sending stats to wandb
-model.fit(train_ds, epochs= epochs, verbose=1, validation_data=validation_ds) #, callbacks=[WandbCallback()]
 
-model.save_weights('trained_weights_VGG16/')
+#Training model and sending stats to wandb
+model.fit(train_ds, epochs= epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback()])
 
 wandb.finish()
 
 exit("Done")
-
-model.fit_generator

@@ -22,18 +22,21 @@ momentum = 0.9
 #Initializing wandb
 wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate, "momentum":momentum, "weight_decay":weight_decay})
 
-#defining checkpoint callback
+#Defining checkpoint callback: saves models into cd every 4000 batches.
 cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath="dense_train{batch:02d}epoch{epoch:02d}", save_weights_only=False, save_freq=4000, verbose=1)
+
+#Defining earlystopping callback: When val_loss doesn't go down, model stops training
 earlystopping = tf.keras.callbacks.EarlyStopping(monitor="val_loss", mode="auto", patience=1, verbose=1)
-#Creating training dataset from fast-22 imagenet directory, defining batch size and prerpocessing image size
+
+#Creating training dataset from fast-22 imagenet directory, defining batch size and pre-processing image size
 train_ds = tf.keras.utils.image_dataset_from_directory(
     "/fast-data22/datasets/ILSVRC/2012/clsloc/train",
     labels = 'inferred',
     label_mode= "int",
     color_mode="rgb",
     batch_size=batch_size,
-    image_size=(224,224), #cropping
-    shuffle=True,#Shuffles data to create "random" dataset from directory
+    image_size=(224,224), #stretching image to size (does not keep aspect ratio)
+    shuffle=True,#Shuffles data to create pseudo-random dataset from directory
     seed=123,
     validation_split=0.2,
     subset= "training"
@@ -45,8 +48,8 @@ validation_ds = tf.keras.utils.image_dataset_from_directory(
     label_mode="int",
     color_mode="rgb",
     batch_size=batch_size,
-    image_size=(224,224), #cropping
-    shuffle=True, #Shuffles data to create "random" dataset from directory
+    image_size=(224,224), #stretching image to size (does not keep aspect ratio)
+    shuffle=True, #Shuffles data to create pseudo-random dataset from directory
     seed=123,
     validation_split=0.2,
     subset= "validation"
@@ -58,8 +61,8 @@ test_ds = tf.keras.utils.image_dataset_from_directory(
     label_mode="int",
     color_mode="rgb",
     batch_size=batch_size,
-    image_size=(224,224), #cropping
-    shuffle=True, #Shuffles data to create "random" dataset from directory
+    image_size=(224,224), #stretching image to size (does not keep aspect ratio)
+    shuffle=True, #Shuffles data to create pseudo-random dataset from directory
     seed=123
 )
 
@@ -68,12 +71,14 @@ for images, labels in train_ds.take(1):
     print(images.shape)
     print(labels.shape)
 
+#Defining model
 vgg16 = tf.keras.applications.VGG16(weights="imagenet")
 
 
-inputs = keras.Input(shape=(224,224,3)) #Input layer takes in arrays with "width" and "height" (any) and 3 color channels
+inputs = keras.Input(shape=(224,224,3)) #Input layer takes in arrays of shape (224,224,3). Currently redundant...
 x = tf.keras.applications.vgg16.preprocess_input(inputs) #Vgg16 preprocessing layer takes in arrays (224,224,3) and preprocesses: (scales, rgb to bgr etc.)
 
+#Specifying base model structure with keras.Sequential. This is to enable the addition of keras.models.layers if need be.
 base_model = tf.keras.Sequential(
     [
 
@@ -103,10 +108,12 @@ base_model = tf.keras.Sequential(
     ]
 )
 output = base_model(x)
+#Defining final model with preprocessing before the base model
 model = tf.keras.Model(inputs,output)
 
+#Freezing model layers (23 layers in VGG-16). Trainable layers: All Dense (fully-connected) layers
 for layer in range(0,19):
-    model.layers[3].layers[layer].trainable = False
+    model.layers[3].layers[layer].trainable = False #The VGG-16 model is a functional layer in the "model" object, hence the indexing.
 
 #Setting model training hyperparameters
 model.compile(
@@ -114,14 +121,17 @@ model.compile(
     loss=keras.losses.SparseCategoricalCrossentropy(),
     metrics=["accuracy"]
 )
-
+#Checking model structure
 model.summary()
 
+#Testing model before training
 initial_test = model.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
 print(initial_test)
+
 #Training model and sending stats to wandb
 model.fit(train_ds, epochs=epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback(),cp_callback,earlystopping])
 
+#Testing model after training
 final_test = model.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
 print(final_test)
 
