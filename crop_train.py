@@ -63,9 +63,18 @@ validation_ds = tf.data.Dataset.from_generator(lambda: val_gen(), #creating vali
                                           output_types=(tf.float32, tf.float32),
                                           output_shapes=([batch_size,224,224,3], [batch_size])) #change to 1000
 
-print(train_gen)
-print(train_ds)
-print(validation_ds)
+#Creating test dataset from fast-22 imagenet directory, defining batch size and prerpocessing image size
+test_ds = tf.keras.utils.image_dataset_from_directory(
+    "/fast-data22/datasets/ILSVRC/2012/clsloc/val_white",
+    labels='inferred',
+    label_mode="int",
+    color_mode="rgb",
+    batch_size=batch_size,
+    image_size=(224,224), #stretching image to size (does not keep aspect ratio)
+    shuffle=True, #Shuffles data to create pseudo-random dataset from directory
+    seed=123
+)
+
 #Creating model from keras library: pretrained vgg16 model
 vgg16 = tf.keras.applications.VGG16(weights="imagenet")
 
@@ -117,6 +126,10 @@ model.summary()
 
 #Training model and sending stats to wandb
 model.fit(train_ds,batch_size=batch_size, epochs= epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback(), earlystopping, cp_callback]) #
+
+#Testing model after training
+final_test = model.evaluate(test_ds, batch_size=batch_size, callbacks=[WandbCallback()], verbose=1)
+print(final_test)
 
 wandb.finish()
 
