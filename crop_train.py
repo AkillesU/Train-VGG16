@@ -82,36 +82,7 @@ vgg16 = tf.keras.applications.VGG16(weights="imagenet")
 inputs = keras.Input(shape=(224,224,3)) #Input layer takes in arrays with shape (224,224,3). Guess this is redundant with the current specs...
 x = tf.keras.applications.vgg16.preprocess_input(inputs) #Vgg16 preprocessing layer takes in arrays (224,224,3) and preprocesses: (scales, rgb to bgr etc.)
 
-#Specifying base model structure with keras.Sequential. This is to enable the addition of keras.models.layers if need be.
-base_model = tf.keras.Sequential(
-    [
-
-        vgg16.layers[0],
-        vgg16.layers[1],
-        vgg16.layers[2],
-        vgg16.layers[3],
-        vgg16.layers[4],
-        vgg16.layers[5],
-        vgg16.layers[6],
-        vgg16.layers[7],
-        vgg16.layers[8],
-        vgg16.layers[9],
-        vgg16.layers[10],
-        vgg16.layers[11],
-        vgg16.layers[12],
-        vgg16.layers[13],
-        vgg16.layers[14],
-        vgg16.layers[15],
-        vgg16.layers[16],
-        vgg16.layers[17],
-        vgg16.layers[18],
-        vgg16.layers[19],
-        vgg16.layers[20],
-        vgg16.layers[21],
-        vgg16.layers[22]
-    ]
-)
-output = base_model(x)
+output = vgg16(x)
 #Defining final model with preprocessing before the base model
 model = tf.keras.Model(inputs,output)
 

@@ -35,13 +35,13 @@ test_ds = tf.keras.utils.image_dataset_from_directory(
 model_original = tf.keras.applications.VGG16(weights="imagenet")
 
 #Loading finetuned model from directory
-model_finetuned3 = tf.keras.models.load_model(filepath="final_train31970epoch02")
+model_finetuned3 = tf.keras.models.load_model(filepath="crop_train32000epoch01")
 
 #Loading finetuned model
-model_finetuned1 = tf.keras.models.load_model(filepath="final_train32000epoch01")
+model_finetuned1 = tf.keras.models.load_model(filepath="crop_train20000epoch01")
 
 #Loading finetuned model
-model_finetuned2 = tf.keras.models.load_model(filepath="final_train12000epoch01")
+model_finetuned2 = tf.keras.models.load_model(filepath="crop_train12000epoch01")
 
 
 #creating preprocessing layers for both models
