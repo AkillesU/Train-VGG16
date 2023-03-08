@@ -17,11 +17,17 @@ print(gpus)
 #Setting hyperparameters for training
 epochs = 10
 batch_size = 32
-learning_rate = 0.0001
+learning_rate = 0.00001
 weight_decay = 0.0005
 momentum = 0.9
 
 directory = "/fast-data22/datasets/ILSVRC/2012/clsloc/train" #training/validation data directory
+
+#Defining checkpoint callback: saves models into cd every 4000 batches.
+cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath="crop_train{batch:02d}epoch{epoch:02d}", save_weights_only=False, save_freq=4000, verbose=1)
+
+#Defining earlystopping callback: When val_loss doesn't go down, model stops training
+earlystopping = tf.keras.callbacks.EarlyStopping(monitor="val_loss", mode="auto", patience=1, verbose=1)
 
 #Initializing wandb
 wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate})
@@ -39,9 +45,9 @@ train_gen = img_gen.flow_from_directory(directory=directory,
                                                   seed=123,
                                                   subset= "training")
 #Creating training tf.data.Dataset object
-train_ds = tf.data.Dataset.from_generator(lambda: train_gen.flow_from_directory(directory), #creating training ds
+train_ds = tf.data.Dataset.from_generator(lambda: train_gen, #creating training ds
                                           output_types=(tf.float32, tf.float32),
-                                          output_shapes=([batch_size,224,224,3], [batch_size,1000])) #change to 1000
+                                          output_shapes=([batch_size,224,224,3], [batch_size])) #change to 1000
 #Creating specific validation data generator
 val_gen = img_gen.flow_from_directory(directory=directory,#creating images and labels for validation ds
                                                   keep_aspect_ratio=True,
@@ -53,10 +59,11 @@ val_gen = img_gen.flow_from_directory(directory=directory,#creating images and l
                                                   seed=123,
                                                   subset= "validation")
 #Creating validation tf.data.Dataset object
-validation_ds = tf.data.Dataset.from_generator(lambda: val_gen.flow_from_directory(directory), #creating validation ds
+validation_ds = tf.data.Dataset.from_generator(lambda: val_gen(), #creating validation ds
                                           output_types=(tf.float32, tf.float32),
-                                          output_shapes=([batch_size,224,224,3], [batch_size ,1000])) #change to 1000
+                                          output_shapes=([batch_size,224,224,3], [batch_size])) #change to 1000
 
+print(train_gen)
 print(train_ds)
 print(validation_ds)
 #Creating model from keras library: pretrained vgg16 model
@@ -109,7 +116,7 @@ model.compile(
 model.summary()
 
 #Training model and sending stats to wandb
-model.fit(train_ds,batch_size=batch_size, epochs= epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback()])
+model.fit(train_ds,batch_size=batch_size, epochs= epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback(), earlystopping, cp_callback]) #
 
 wandb.finish()
 
