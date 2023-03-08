@@ -81,8 +81,8 @@ x = tf.keras.applications.vgg16.preprocess_input(inputs) #Vgg16 preprocessing la
 #Specifying base model structure with keras.Sequential. This is to enable the addition of keras.models.layers if need be.
 base_model = tf.keras.Sequential(
     [
-        tf.keras.layers.RandomFlip(mode="horizontal"), # random horizontal flipping
-        tf.keras.layers.RandomContrast(factor=0.2), #random RGB shift
+        #tf.keras.layers.RandomFlip(mode="horizontal"), # random horizontal flipping
+        #tf.keras.layers.RandomContrast(factor=0.2), #random RGB shift
         vgg16.layers[0],
         vgg16.layers[1],
         vgg16.layers[2],
