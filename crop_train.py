@@ -102,14 +102,14 @@ model = tf.keras.Model(inputs,output)
 #Compiling model and setting hyperparameters
 model.compile(
     optimizer=tf.keras.optimizers.experimental.AdamW(learning_rate= learning_rate, weight_decay=weight_decay, use_ema=True, ema_momentum=momentum), #Change to AdamW and add momentum and decay
-    loss=keras.losses.SparseCategoricalCrossentropy(from_logits=False),
+    loss=keras.losses.SparseCategoricalCrossentropy(),
     metrics=["accuracy"]
 )
 #Checking model structure
 model.summary()
 
 #Training model and sending stats to wandb
-model.fit(train_ds, epochs= epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback()])
+model.fit(train_ds,batch_size=batch_size, epochs= epochs, verbose=1, validation_data=validation_ds, callbacks=[WandbCallback()])
 
 wandb.finish()
 
