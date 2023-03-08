@@ -41,7 +41,7 @@ train_gen = img_gen.flow_from_directory(directory=directory,
 #Creating training tf.data.Dataset object
 train_ds = tf.data.Dataset.from_generator(lambda: train_gen.flow_from_directory(directory), #creating training ds
                                           output_types=(tf.float32, tf.float32),
-                                          output_shapes=([batch_size,224,224,3], [32,1000])) #change to 1000
+                                          output_shapes=([batch_size,224,224,3], [batch_size,1000])) #change to 1000
 #Creating specific validation data generator
 val_gen = img_gen.flow_from_directory(directory=directory,#creating images and labels for validation ds
                                                   keep_aspect_ratio=True,
@@ -55,10 +55,10 @@ val_gen = img_gen.flow_from_directory(directory=directory,#creating images and l
 #Creating validation tf.data.Dataset object
 validation_ds = tf.data.Dataset.from_generator(lambda: val_gen.flow_from_directory(directory), #creating validation ds
                                           output_types=(tf.float32, tf.float32),
-                                          output_shapes=([batch_size,224,224,3], [32 ,1000])) #change to 1000
+                                          output_shapes=([batch_size,224,224,3], [batch_size ,1000])) #change to 1000
 
 print(train_ds)
-
+print(validation_ds)
 #Creating model from keras library: pretrained vgg16 model
 vgg16 = tf.keras.applications.VGG16(weights="imagenet")
 
