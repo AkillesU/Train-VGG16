@@ -15,7 +15,7 @@ gpus = tf.config.list_physical_devices('GPU')
 print(gpus)
 
 #Setting hyperparameters for training
-epochs = 10
+epochs = 3
 batch_size = 32
 learning_rate = 0.00001
 weight_decay = 0.0005
@@ -27,7 +27,7 @@ directory = "/fast-data22/datasets/ILSVRC/2012/clsloc/train" #training/validatio
 cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath="crop_train{batch:02d}epoch{epoch:02d}", save_weights_only=False, save_freq=4000, verbose=1)
 
 #Defining earlystopping callback: When val_loss doesn't go down, model stops training
-earlystopping = tf.keras.callbacks.EarlyStopping(monitor="val_loss", mode="auto", patience=1, verbose=1)
+earlystopping = tf.keras.callbacks.EarlyStopping(monitor="val_loss", mode="auto", patience=2, verbose=1)
 
 #Initializing wandb
 wandb.init(project="Train-VGG16", entity="a-rechardt", config={"epochs":epochs, "batch_size":batch_size, "learning_rate":learning_rate})
